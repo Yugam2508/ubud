@@ -1,61 +1,791 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ubud Retreat | Yugam</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Silent Jungle · Yugam in Ubud</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=EB+Garamond:ital,opsz,wght@0,8..144,400;0,8..144,500;1,8..144,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    /* ═══ TOKENS ═══ */
+    :root {
+      --ink:        #1b1c18;
+      --forest:     #263329;
+      --green:      #3a6652;
+      --sage:       #7a9e8e;
+      --cream:      #f8f4ed;
+      --parchment:  #ede8dc;
+      --sand:       #cec5af;
+      --gold:       #a8833a;
+      --muted:      #5e5e52;
+    }
+
+    /* ═══ RESET ═══ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'EB Garamond', Georgia, serif;
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ═══ HERO ═══ */
+    .hero {
+      height: 100vh;
+      min-height: 580px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        url('https://images.unsplash.com/photo-1558005530-d7c896398ea6?auto=format&fit=crop&q=85&w=1800')
+        center/cover no-repeat;
+      transform: scale(1.08);
+      animation: heroZoom 14s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
+    }
+    @keyframes heroZoom {
+      from { transform: scale(1.08); }
+      to   { transform: scale(1.0); }
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        160deg,
+        rgba(26,30,24,0.30) 0%,
+        rgba(26,30,24,0.62) 55%,
+        rgba(26,30,24,0.85) 100%
+      );
+    }
+    /* film grain */
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+      opacity: 0.45;
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center; color: #fff;
+      padding: 20px 30px;
+      opacity: 0;
+      animation: fadeUp 1.6s cubic-bezier(0.22,0.61,0.36,1) 0.4s forwards;
+    }
+    .hero-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.72rem;
+      letter-spacing: 7px;
+      text-transform: uppercase;
+      opacity: 0.65;
+      margin-bottom: 22px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.2rem, 9vw, 7.5rem);
+      font-weight: 400;
+      line-height: 1.02;
+      letter-spacing: -1px;
+      margin-bottom: 22px;
+    }
+    .hero h1 em { font-style: italic; color: rgba(255,255,255,0.65); }
+    .hero-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      opacity: 0.75;
+      letter-spacing: 0.5px;
+    }
+    .scroll-cue {
+      position: absolute; bottom: 38px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 2; color: rgba(255,255,255,0.45);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.65rem; letter-spacing: 5px; text-transform: uppercase;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      opacity: 0;
+      animation: fadeUp 2s ease 2s forwards;
+    }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.45), transparent);
+      animation: linePulse 2.2s ease-in-out infinite;
+    }
+    @keyframes linePulse {
+      0%,100% { opacity: 0.35; transform: scaleY(1); }
+      50%      { opacity: 1;    transform: scaleY(1.12); }
+    }
+
+    /* ═══ STICKY NAV ═══ */
+    .day-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--cream);
+      border-bottom: 1px solid var(--sand);
+      transform: translateY(-110%);
+      transition: transform 0.45s cubic-bezier(0.22,0.61,0.36,1);
+      box-shadow: 0 3px 24px rgba(0,0,0,0.07);
+    }
+    .day-nav.visible { transform: translateY(0); }
+    .nav-inner {
+      max-width: 920px; margin: 0 auto;
+      display: flex; align-items: stretch; justify-content: space-between;
+      padding: 0 24px;
+    }
+    .nav-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.88rem; font-style: italic;
+      color: var(--green);
+      display: flex; align-items: center;
+      padding: 0 12px 0 0;
+      border-right: 1px solid var(--sand);
+      white-space: nowrap;
+    }
+    .nav-links { display: flex; }
+    .nav-link {
+      padding: 18px 18px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.72rem; letter-spacing: 3.5px;
+      text-transform: uppercase; color: var(--sage);
+      position: relative; transition: color 0.3s;
+      white-space: nowrap;
+    }
+    .nav-link::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--green);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+    .nav-link:hover, .nav-link.active { color: var(--green); }
+    .nav-link.active::after { transform: scaleX(1); }
+
+    /* ═══ SHARED SECTION UTILITIES ═══ */
+    .section-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.68rem; letter-spacing: 5px;
+      text-transform: uppercase; color: var(--sage);
+      display: block; margin-bottom: 14px;
+    }
+    .gold-rule {
+      display: flex; align-items: center; gap: 14px;
+      max-width: 200px; margin: 0 auto;
+    }
+    .gold-rule span { flex: 1; height: 1px; background: var(--gold); opacity: 0.5; }
+    .gold-rule i {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: normal; font-size: 0.55rem;
+      color: var(--gold); letter-spacing: 1px;
+    }
+
+    /* ═══ INTRO ═══ */
+    #intro {
+      max-width: 680px; margin: 0 auto;
+      padding: 110px 30px 50px;
+      text-align: center;
+    }
+    #intro h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem; font-weight: 400;
+      color: var(--forest); margin-bottom: 28px;
+      line-height: 1.15;
+    }
+    #intro p {
+      font-size: 1.13rem; line-height: 2.05;
+      color: var(--muted); font-style: italic;
+    }
+
+    /* ═══ ITINERARY ═══ */
+    #itinerary {
+      background: var(--parchment);
+      padding: 80px 30px 90px;
+      margin-top: 60px;
+    }
+    .itin-inner { max-width: 760px; margin: 0 auto; }
+    .itin-inner h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 400;
+      color: var(--forest); text-align: center;
+      margin-bottom: 44px;
+    }
+    .itin-table {
+      width: 100%; border-collapse: collapse;
+    }
+    .itin-table thead th {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.68rem; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--sage);
+      padding: 12px 18px; text-align: left;
+      border-bottom: 1px solid var(--sand);
+      font-weight: 400;
+    }
+    .itin-table tbody td {
+      padding: 20px 18px;
+      border-bottom: 1px solid rgba(206,197,175,0.5);
+      font-size: 1rem; line-height: 1.5;
+    }
+    .itin-table tbody tr:last-child td { border-bottom: none; }
+    .itin-table .t-date {
+      font-family: 'Playfair Display', serif;
+      font-style: italic; color: var(--green);
+      white-space: nowrap; font-size: 0.95rem;
+    }
+    .itin-table .t-spot {
+      font-style: italic; color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .itin-table tbody tr {
+      transition: background 0.2s;
+    }
+    .itin-table tbody tr:hover { background: rgba(255,255,255,0.5); }
+
+    /* ═══ CHAPTER SEPARATOR ═══ */
+    .chapter-sep {
+      display: flex; align-items: center; justify-content: center;
+      padding: 50px 20px 0;
+      background: var(--cream);
+    }
+    .chapter-sep-inner {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.65rem; letter-spacing: 6px;
+      text-transform: uppercase; color: var(--sand);
+    }
+
+    /* ═══ DAY SECTIONS ═══ */
+    .day-section { background: var(--cream); }
+
+    /* Chapter hero banner */
+    .day-banner {
+      height: 60vh; min-height: 420px;
+      position: relative;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+    }
+    .day-banner-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+    }
+    .day-banner-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(18,22,18,0.92) 0%,
+        rgba(18,22,18,0.45) 45%,
+        rgba(18,22,18,0.10) 100%
+      );
+    }
+    .day-banner-text {
+      position: relative; z-index: 2;
+      color: #fff; padding: 48px 60px;
+    }
+    .day-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.68rem; letter-spacing: 7px;
+      text-transform: uppercase; opacity: 0.55;
+      margin-bottom: 10px;
+    }
+    .day-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      font-weight: 400; line-height: 1.08;
+      margin-bottom: 10px;
+    }
+    .day-loc {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 1rem;
+      opacity: 0.6;
+    }
+
+    /* Day body grid */
+    .day-body {
+      max-width: 920px; margin: 0 auto;
+      padding: 70px 40px 80px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 65px;
+      align-items: start;
+    }
+
+    /* Journal prose */
+    .journal h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem; font-weight: 400;
+      font-style: italic; color: var(--forest);
+      margin-bottom: 22px; line-height: 1.3;
+    }
+    .journal p {
+      font-size: 1.05rem; line-height: 2.0;
+      color: #48483e; margin-bottom: 18px;
+    }
+    /* Drop cap */
+    .journal p.dropcap::first-letter {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem; font-weight: 700;
+      float: left; line-height: 0.78;
+      margin: 6px 10px 0 0;
+      color: var(--green);
+    }
+    .journal .note {
+      border-left: 2px solid var(--gold);
+      padding: 12px 18px;
+      margin-top: 24px;
+      font-style: italic;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      background: rgba(168,131,58,0.05);
+    }
+
+    /* Polaroid stack */
+    .polaroids {
+      display: flex; flex-direction: column; gap: 28px;
+      padding-top: 10px;
+    }
+    .polaroid {
+      background: #fff;
+      padding: 14px 14px 48px;
+      box-shadow: 0 5px 28px rgba(0,0,0,0.10),
+                  0 1px 5px rgba(0,0,0,0.06);
+      transform: rotate(-1.8deg);
+      transition: transform 0.35s cubic-bezier(0.22,0.61,0.36,1),
+                  box-shadow 0.35s ease;
+      cursor: default; position: relative;
+    }
+    .polaroid:nth-child(even) {
+      transform: rotate(1.5deg) translateX(18px);
+    }
+    .polaroid:hover {
+      transform: rotate(0deg) scale(1.03) !important;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.16);
+      z-index: 5;
+    }
+    .polaroid img {
+      width: 100%; height: 195px;
+      object-fit: cover;
+    }
+    .polaroid-cap {
+      text-align: center; margin-top: 16px;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 1.05rem;
+      color: #888;
+    }
+
+    /* ═══ FULL GALLERY ═══ */
+    #gallery {
+      background: var(--forest);
+      padding: 90px 40px 100px;
+    }
+    .gallery-head {
+      text-align: center; margin-bottom: 50px;
+    }
+    .gallery-head .section-label { color: var(--sage); }
+    .gallery-head h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem; font-weight: 400;
+      color: #fff; margin-top: 8px;
+    }
+    .gallery-grid {
+      max-width: 1040px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .gallery-item {
+      position: relative; overflow: hidden;
+      aspect-ratio: 3/4;
+    }
+    .gallery-item:nth-child(1) { aspect-ratio: 3/3; grid-row: span 1; }
+    .gallery-item:nth-child(4) { grid-column: span 2; aspect-ratio: 16/9; }
+    .gallery-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .gallery-item:hover img { transform: scale(1.06); }
+    .gallery-cap {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.65));
+      color: #fff; font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 0.95rem;
+      padding: 30px 16px 14px;
+      opacity: 0; transition: opacity 0.35s;
+    }
+    .gallery-item:hover .gallery-cap { opacity: 1; }
+
+    /* ═══ FOOTER ═══ */
+    footer {
+      background: var(--ink);
+      padding: 70px 20px;
+      text-align: center;
+    }
+    .footer-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem; font-weight: 400; font-style: italic;
+      color: #fff; margin-bottom: 8px;
+    }
+    .footer-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 0.95rem;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 32px;
+    }
+    .footer-note {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.68rem; letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+    }
+
+    /* ═══ FADE-IN ═══ */
+    .fi {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .fi.in { opacity: 1; transform: translateY(0); }
+    .fi-delay-1 { transition-delay: 0.15s; }
+    .fi-delay-2 { transition-delay: 0.30s; }
+
+    /* ═══ ANIMATIONS ═══ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 720px) {
+      .day-body {
+        grid-template-columns: 1fr;
+        gap: 40px; padding: 50px 24px 60px;
+      }
+      .day-banner-text { padding: 36px 28px; }
+      .nav-brand { display: none; }
+      .nav-link { padding: 16px 12px; font-size: 0.65rem; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-item:nth-child(4) { grid-column: span 1; aspect-ratio: 3/4; }
+      #intro { padding: 70px 24px 40px; }
+    }
+  </style>
 </head>
 <body>
 
-<header>
-    <h1>The Silent Jungle</h1>
-    <p>A Writer’s Solo Retreat • April 18 - 26, 2026</p>
-</header>
+  <!-- ══════════ HERO ══════════ -->
+  <section class="hero" id="top">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Ubud, Bali &nbsp;·&nbsp; A Live Journal</p>
+      <h1>The Silent<br><em>Jungle</em></h1>
+      <p class="hero-sub">A Writer's Solo Retreat &nbsp;·&nbsp; April 18 – 26, 2026</p>
+    </div>
+    <div class="scroll-cue">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
 
-<div class="container">
-    <section id="intro">
-        <h2>The Intent</h2>
-        <p>Eight days of jungle mist, rice paddy silences, and vegetarian exploration. This space serves as a live journal for my writing and photography journey from Singapore to the heart of Bali.</p>
-    </section>
+  <!-- ══════════ STICKY DAY NAV ══════════ -->
+  <nav class="day-nav" id="dayNav" aria-label="Day navigation">
+    <div class="nav-inner">
+      <span class="nav-brand">The Silent Jungle</span>
+      <div class="nav-links">
+        <a href="#intro"     class="nav-link">Preface</a>
+        <a href="#day1"      class="nav-link">Apr 18</a>
+        <a href="#day2"      class="nav-link">Apr 20</a>
+        <a href="#day3"      class="nav-link">Apr 23</a>
+        <a href="#day4"      class="nav-link">Apr 25</a>
+        <a href="#gallery"   class="nav-link">Gallery</a>
+      </div>
+    </div>
+  </nav>
 
-    <section id="plan">
-        <h2>The Itinerary</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Day</th>
-                    <th>Focus</th>
-                    <th>Photography Spot</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>Apr 18</td><td>Arrival & Zen</td><td>Bisma St. Sunset</td></tr>
-                <tr><td>Apr 20</td><td>Nature Flow</td><td>Campuhan Ridge (6 AM)</td></tr>
-                <tr><td>Apr 23</td><td>Artistic Drift</td><td>Tegalalang Terraces</td></tr>
-                <tr><td>Apr 25</td><td>Reflection</td><td>Saraswati Water Palace</td></tr>
-            </tbody>
-        </table>
-    </section>
+  <!-- ══════════ INTRO ══════════ -->
+  <section id="intro" class="fi">
+    <span class="section-label">Preface</span>
+    <h2>The Intent</h2>
+    <p>Eight days of jungle mist, rice paddy silences, and vegetarian exploration. This space is a live journal for my writing and photography journey from Singapore to the heart of Bali — not a travel guide, but a record of attention.</p>
+  </section>
 
-    <section id="gallery">
-        <h2>Visual Journal</h2>
-        <div class="gallery">
-            <div class="polaroid">
-                <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=400" alt="Jungle">
-                <div class="polaroid-caption">Morning Mist</div>
-            </div>
-            <div class="polaroid">
-                <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&q=80&w=400" alt="Temple">
-                <div class="polaroid-caption">Sacred Spaces</div>
-            </div>
+  <div style="padding: 50px 20px 10px; display:flex; justify-content:center;" class="fi fi-delay-1">
+    <div class="gold-rule"><span></span><i>✦</i><span></span></div>
+  </div>
+
+  <!-- ══════════ ITINERARY ══════════ -->
+  <section id="itinerary" class="fi">
+    <div class="itin-inner">
+      <span class="section-label" style="text-align:center;">The Map Ahead</span>
+      <h2>Itinerary</h2>
+      <table class="itin-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Focus</th>
+            <th>Photography Spot</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="t-date">Apr 18</td>
+            <td>Arrival &amp; Zen</td>
+            <td class="t-spot">Bisma Street at Sunset</td>
+          </tr>
+          <tr>
+            <td class="t-date">Apr 20</td>
+            <td>Nature Flow</td>
+            <td class="t-spot">Campuhan Ridge Walk, 6 AM</td>
+          </tr>
+          <tr>
+            <td class="t-date">Apr 23</td>
+            <td>Artistic Drift</td>
+            <td class="t-spot">Tegalalang Rice Terraces</td>
+          </tr>
+          <tr>
+            <td class="t-date">Apr 25</td>
+            <td>Reflection</td>
+            <td class="t-spot">Saraswati Water Palace</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════ DAY 1 ══════════ -->
+  <div class="chapter-sep fi"><span class="chapter-sep-inner">─── Chapter I ───</span></div>
+  <section class="day-section" id="day1">
+    <div class="day-banner">
+      <div class="day-banner-bg" style="background-image:url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=85&w=1600');"></div>
+      <div class="day-banner-overlay"></div>
+      <div class="day-banner-text fi">
+        <p class="day-num">Day 01 &nbsp;·&nbsp; April 18, 2026</p>
+        <h2 class="day-title">Arrival &amp; Zen</h2>
+        <p class="day-loc">📍 Bisma Street at Sunset</p>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="journal fi fi-delay-1">
+        <h3>First Light in a Foreign Stillness</h3>
+        <p class="dropcap">The flight from Changi was barely two and a half hours, but landing in Bali always feels like crossing a threshold — from the hum of productivity into something older and quieter. The guesthouse on Bisma Street revealed itself at golden hour, tucked behind a low stone wall and a curtain of bougainvillea.</p>
+        <p>The town was quieter than expected for April. Somewhere in the middle distance, a gamelan. No WiFi for the first hour, which turned out to be the best possible beginning.</p>
+        <div class="note">
+          Note to self: the vegetarian nasi goreng at the warung across from the rice field terrace is worth every rupiah. Order a second portion.
         </div>
-    </section>
+      </div>
+      <div class="polaroids fi fi-delay-2">
+        <div class="polaroid">
+          <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=500&h=380" alt="Jungle mist">
+          <div class="polaroid-cap">First Evening Mist</div>
+        </div>
+        <div class="polaroid">
+          <img src="https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&q=80&w=500&h=380" alt="Rice fields">
+          <div class="polaroid-cap">Bisma Valley, 6:48 pm</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <footer>
-        <p>Built with Git & Serenity • 2026</p>
-    </footer>
-</div>
+  <!-- ══════════ DAY 2 ══════════ -->
+  <div class="chapter-sep fi"><span class="chapter-sep-inner">─── Chapter II ───</span></div>
+  <section class="day-section" id="day2">
+    <div class="day-banner">
+      <div class="day-banner-bg" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=85&w=1600'); background-position: center 65%;"></div>
+      <div class="day-banner-overlay"></div>
+      <div class="day-banner-text fi">
+        <p class="day-num">Day 03 &nbsp;·&nbsp; April 20, 2026</p>
+        <h2 class="day-title">Nature Flow</h2>
+        <p class="day-loc">📍 Campuhan Ridge Walk, 6 AM</p>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="journal fi fi-delay-1">
+        <h3>The Ridge Before the World Woke Up</h3>
+        <p class="dropcap">Alarm at 5:15. The air at that hour is something else entirely — cool, dense with the smell of wet earth and frangipani, and utterly without other people. The Campuhan Ridge trail is narrow, flanked by alang-alang grass that brushes your arms as you walk toward the horizon.</p>
+        <p>Three pages of longhand notes completed before breakfast. Something about moving through physical space unlocks whatever stays blocked at a desk. The body thinks differently when it moves.</p>
+        <div class="note">
+          Photography lesson of the day: the best light lasted exactly nineteen minutes. Next time, arrive twenty minutes earlier and stay nineteen minutes later.
+        </div>
+      </div>
+      <div class="polaroids fi fi-delay-2">
+        <div class="polaroid">
+          <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&q=80&w=500&h=380" alt="Ridge morning">
+          <div class="polaroid-cap">Ridge at First Light</div>
+        </div>
+        <div class="polaroid">
+          <img src="https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?auto=format&fit=crop&q=80&w=500&h=380" alt="Forest path">
+          <div class="polaroid-cap">The Narrow Path</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- ══════════ DAY 3 ══════════ -->
+  <div class="chapter-sep fi"><span class="chapter-sep-inner">─── Chapter III ───</span></div>
+  <section class="day-section" id="day3">
+    <div class="day-banner">
+      <div class="day-banner-bg" style="background-image:url('https://images.unsplash.com/photo-1558005530-d7c896398ea6?auto=format&fit=crop&q=85&w=1600'); background-position: center 35%;"></div>
+      <div class="day-banner-overlay"></div>
+      <div class="day-banner-text fi">
+        <p class="day-num">Day 06 &nbsp;·&nbsp; April 23, 2026</p>
+        <h2 class="day-title">Artistic Drift</h2>
+        <p class="day-loc">📍 Tegalalang Rice Terraces</p>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="journal fi fi-delay-1">
+        <h3>The Architecture of Patience</h3>
+        <p class="dropcap">Tegalalang is a reminder that the most beautiful things take generations to build. The paddies weren't designed — they accumulated, layer by layer, each carved by hand to catch water and light just so. Looking at them long enough, you start to see it as a living system, not a landscape.</p>
+        <p>Spent the morning doing compositional sketches. Perspective keeps shifting the further you descend. By the time I'd walked to the valley floor, the light overhead had turned fully golden.</p>
+        <div class="note">
+          Bought a small watercolor of the terraces from a local artist at the base. Couldn't not. It cost less than a coffee in Singapore and will outlast most things I own.
+        </div>
+      </div>
+      <div class="polaroids fi fi-delay-2">
+        <div class="polaroid">
+          <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=500&h=380" alt="Terraces">
+          <div class="polaroid-cap">Terraced Light</div>
+        </div>
+        <div class="polaroid">
+          <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=500&h=380" alt="Art">
+          <div class="polaroid-cap">The Artist's Hand</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ DAY 4 ══════════ -->
+  <div class="chapter-sep fi"><span class="chapter-sep-inner">─── Chapter IV ───</span></div>
+  <section class="day-section" id="day4">
+    <div class="day-banner">
+      <div class="day-banner-bg" style="background-image:url('https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&q=85&w=1600'); background-position: center 40%;"></div>
+      <div class="day-banner-overlay"></div>
+      <div class="day-banner-text fi">
+        <p class="day-num">Day 08 &nbsp;·&nbsp; April 25, 2026</p>
+        <h2 class="day-title">Reflection</h2>
+        <p class="day-loc">📍 Saraswati Water Palace</p>
+      </div>
+    </div>
+    <div class="day-body">
+      <div class="journal fi fi-delay-1">
+        <h3>Still Water, Still Mind</h3>
+        <p class="dropcap">The lotus flowers at Saraswati open slowly — not dramatically, just steadily. I sat at the edge of the reflecting pool for almost an hour. Nobody asked me to leave. Nobody asked me anything at all. This is, I think, the exact thing I came here for.</p>
+        <p>Tomorrow is departure day. The notebook is almost full. I don't think that's a coincidence — the place and the time conspired to make me write more honestly than I normally allow myself.</p>
+        <div class="note">
+          "To travel is to notice. To write is to notice that you noticed." — Something I scribbled between the second and third coffee, which may or may not be original.
+        </div>
+      </div>
+      <div class="polaroids fi fi-delay-2">
+        <div class="polaroid">
+          <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=500&h=380" alt="Lotus pool">
+          <div class="polaroid-cap">Saraswati Lotus Pool</div>
+        </div>
+        <div class="polaroid">
+          <img src="https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&q=80&w=500&h=380" alt="Last evening">
+          <div class="polaroid-cap">The Last Evening</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ GALLERY ══════════ -->
+  <section id="gallery">
+    <div class="gallery-head fi">
+      <span class="section-label">Visual Journal</span>
+      <h2>Through the Lens</h2>
+    </div>
+    <div class="gallery-grid fi fi-delay-1">
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=500&h=640" alt="Morning Mist">
+        <div class="gallery-cap">Morning Mist</div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&q=80&w=500&h=640" alt="Sacred Spaces">
+        <div class="gallery-cap">Sacred Spaces</div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=500&h=640" alt="Valley Life">
+        <div class="gallery-cap">Valley Life</div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1558005530-d7c896398ea6?auto=format&fit=crop&q=80&w=900&h=480" alt="Rice & Sky">
+        <div class="gallery-cap">Rice &amp; Sky</div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&q=80&w=500&h=640" alt="Terraces">
+        <div class="gallery-cap">The Terraces</div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?auto=format&fit=crop&q=80&w=500&h=640" alt="Temple Water">
+        <div class="gallery-cap">Temple Water</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer class="fi">
+    <p class="footer-title">The Silent Jungle</p>
+    <p class="footer-sub">Ubud, Bali &nbsp;·&nbsp; April 2026</p>
+    <div style="display:flex;justify-content:center;margin-bottom:32px;">
+      <div class="gold-rule"><span></span><i>✦</i><span></span></div>
+    </div>
+    <p class="footer-note">Built with Git &amp; Serenity &nbsp;·&nbsp; 2026</p>
+  </footer>
+
+  <script>
+    /* ── Sticky nav: appear after hero leaves viewport ── */
+    const nav  = document.getElementById('dayNav');
+    const hero = document.querySelector('.hero');
+
+    new IntersectionObserver(entries => {
+      nav.classList.toggle('visible', !entries[0].isIntersecting);
+    }, { threshold: 0 }).observe(hero);
+
+    /* ── Active nav link via scroll spy ── */
+    const spySections = document.querySelectorAll('[id]');
+    const navLinks    = document.querySelectorAll('.nav-link');
+
+    new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          navLinks.forEach(l => {
+            l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id);
+          });
+        }
+      });
+    }, { rootMargin: '-28% 0px -60% 0px' }).observe(
+      ...Array.from(spySections) // observe all
+    );
+
+    // Observe all separately
+    spySections.forEach(s => {
+      new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            navLinks.forEach(l => {
+              if (l.getAttribute('href') === '#' + e.target.id) {
+                navLinks.forEach(x => x.classList.remove('active'));
+                l.classList.add('active');
+              }
+            });
+          }
+        });
+      }, { rootMargin: '-28% 0px -60% 0px' }).observe(s);
+    });
+
+    /* ── Fade-in on scroll ── */
+    const fadeEls = document.querySelectorAll('.fi');
+    const fadeObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          fadeObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    fadeEls.forEach(el => fadeObs.observe(el));
+  </script>
 </body>
 </html>
